@@ -1,0 +1,3 @@
+<ng-content *ngIf="loading" select="loading"></ng-content>
+<ng-content *ngIf="error" select="error"></ng-content>
+<ng-content *ngIf="!loading && !error"></ng-content>
