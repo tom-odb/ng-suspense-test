@@ -1,11 +1,9 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { Observable } from "rxjs/Observable";
-import "rxjs/add/observable/throw";
-import "rxjs/add/observable/pipe";
-import { Subject } from "rxjs/Subject";
-import { catchError, timeoutWith } from "rxjs/operators";
+import { _throw } from 'rxjs/observable/throw';
+import { catchError, timeoutWith, take } from "rxjs/operators";
 
-const TIMEOUT_ERROR = "TIMEOUT_COMPONENT_TRESHOLD_EXCEEDED";
+import { TIMEOUT_ERROR } from "./loading.conf";
 
 @Component({
   selector: "timeout",
@@ -25,7 +23,7 @@ export class TimeoutComponent implements OnInit {
 
     this.resolve
       .pipe(
-        timeoutWith(this.ms, Observable.throw(TIMEOUT_ERROR)),
+        timeoutWith(this.ms, _throw(TIMEOUT_ERROR)),
         catchError((err: any, res: Observable<any>) => {
           if (err === TIMEOUT_ERROR) {
             this.loading = true;
@@ -37,7 +35,8 @@ export class TimeoutComponent implements OnInit {
           this.loading = false;
 
           return Observable.throw(err);
-        })
+        }),
+        take(1)
       )
       .subscribe(() => {
         this.loading = false;
